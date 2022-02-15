@@ -40,12 +40,13 @@ import {videoView} from '../../theme.json';
 import Layout from '../subComponents/LayoutEnum';
 import Toast from '../../react-native-toast-message';
 import {NetworkQualityProvider} from '../components/NetworkQualityContext';
+import Poll from '../components/Poll';
 
 const useChatNotification = (
   messageStore: string | any[],
   privateMessageStore: string | any[],
   chatDisplayed: boolean,
-  isPrivateChatDisplayed: boolean
+  isPrivateChatDisplayed: boolean,
 ) => {
   // store the last checked state from the messagestore, to identify unread messages
   const [lastCheckedPublicState, setLastCheckedPublicState] = useState(0);
@@ -54,7 +55,7 @@ const useChatNotification = (
     if (chatDisplayed && !isPrivateChatDisplayed) {
       setLastCheckedPublicState(messageStore.length);
     }
-  }, [messageStore,isPrivateChatDisplayed]);
+  }, [messageStore, isPrivateChatDisplayed]);
 
   const setPrivateMessageLastSeen = ({userId, lastSeenCount}) => {
     setLastCheckedPrivateState((prevState) => {
@@ -70,7 +71,12 @@ const useChatNotification = (
   ];
 };
 
-const NotificationControl = ({children, chatDisplayed, setSidePanel, isPrivateChatDisplayed}) => {
+const NotificationControl = ({
+  children,
+  chatDisplayed,
+  setSidePanel,
+  isPrivateChatDisplayed,
+}) => {
   const {messageStore, privateMessageStore, userList, localUid, events} =
     useContext(ChatContext);
   const [
@@ -79,7 +85,12 @@ const NotificationControl = ({children, chatDisplayed, setSidePanel, isPrivateCh
     lastCheckedPrivateState,
     setLastCheckedPrivateState,
     setPrivateMessageLastSeen,
-  ] = useChatNotification(messageStore, privateMessageStore, chatDisplayed, isPrivateChatDisplayed);
+  ] = useChatNotification(
+    messageStore,
+    privateMessageStore,
+    chatDisplayed,
+    isPrivateChatDisplayed,
+  );
 
   const pendingPublicNotification =
     messageStore.length - lastCheckedPublicState;
@@ -246,7 +257,7 @@ const VideoCall: React.FC = () => {
   const [chatDisplayed, setChatDisplayed] = useState(false);
   const [queryComplete, setQueryComplete] = useState(false);
   const [sidePanel, setSidePanel] = useState<SidePanelType>(SidePanelType.None);
-  const [isPrivateChatDisplayed, setPrivateChatDisplayed] = useState(false)
+  const [isPrivateChatDisplayed, setPrivateChatDisplayed] = useState(false);
   const {phrase} = useParams();
   const [errorMessage, setErrorMessage] = useState(null);
   const [isHost, setIsHost] = React.useState(false);
@@ -355,11 +366,11 @@ const VideoCall: React.FC = () => {
                   callActive={callActive}>
                   {callActive ? (
                     <View style={style.full}>
+                      <Poll />
                       <NotificationControl
                         setSidePanel={setSidePanel}
                         chatDisplayed={sidePanel === SidePanelType.Chat}
-                        isPrivateChatDisplayed={isPrivateChatDisplayed}
-                        >
+                        isPrivateChatDisplayed={isPrivateChatDisplayed}>
                         {({
                           pendingPublicNotification,
                           pendingPrivateNotification,
@@ -411,7 +422,9 @@ const VideoCall: React.FC = () => {
                                 {sidePanel === SidePanelType.Chat ? (
                                   $config.CHAT ? (
                                     <Chat
-                                      setPrivateChatDisplayed={setPrivateChatDisplayed}
+                                      setPrivateChatDisplayed={
+                                        setPrivateChatDisplayed
+                                      }
                                       privateMessageCountMap={
                                         privateMessageCountMap
                                       }
