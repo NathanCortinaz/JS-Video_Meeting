@@ -2,6 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import Modal from 'react-modal';
 import {Line} from 'rc-progress';
 
+import ChatContext, {controlMessageEnum} from './ChatContext';
 import {PollContext} from './PollContext';
 import styles from './pollStyles';
 
@@ -14,8 +15,15 @@ const Poll = () => {
     isModalOpen,
     setIsModalOpen,
   } = useContext(PollContext);
+  const {sendControlMessage} = useContext(ChatContext);
   const [totalVotes, setTotalVotes] = useState(0);
   const [voted, setVoted] = useState(false);
+
+  useEffect(() => {
+    setTotalVotes(
+      voteData.map((item) => item.votes).reduce((prev, next) => prev + next),
+    );
+  }, [voteData]);
 
   const submitVote = (e, chosenAnswer) => {
     if (!voted) {
@@ -28,6 +36,10 @@ const Poll = () => {
       });
 
       setAnswers(newAnswers);
+      sendControlMessage(controlMessageEnum.initiatePoll, {
+        question,
+        answers: newAnswers,
+      });
       setTotalVotes((prevTotalVotes) => prevTotalVotes + 1);
       setVoted((prevVoted) => !prevVoted);
     }

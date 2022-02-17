@@ -11,7 +11,7 @@
 */
 import React, {useContext} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import chatContext, {controlMessageEnum} from './ChatContext';
+import ChatContext, {controlMessageEnum} from './ChatContext';
 import ColorContext from './ColorContext';
 import SecondaryButton from '../atoms/SecondaryButton';
 import PrimaryButton from '../atoms/PrimaryButton';
@@ -20,7 +20,7 @@ import TextInput from '../atoms/TextInput';
 import {PollContext} from './PollContext';
 
 const HostControlView = () => {
-  const {sendControlMessage} = useContext(chatContext);
+  const {sendControlMessage} = useContext(ChatContext);
   const {primaryColor} = useContext(ColorContext);
   const {question, setQuestion, answers, setAnswers, setIsModalOpen} =
     useContext(PollContext);
@@ -69,6 +69,10 @@ const HostControlView = () => {
           <PrimaryButton
             onPress={() => {
               setIsModalOpen(true);
+              sendControlMessage(controlMessageEnum.initiatePoll, {
+                question,
+                answers,
+              });
             }}
             text="Start Poll"
           />

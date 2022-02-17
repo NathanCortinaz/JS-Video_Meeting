@@ -14,6 +14,7 @@ const PollProvider = ({children}) => {
 
   return (
     <PollContext.Provider
+      ariaHideApp={false}
       value={{
         question,
         setQuestion,
